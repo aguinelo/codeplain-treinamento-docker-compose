@@ -1,0 +1,11 @@
+server_tokens off;
+fastcgi_hide_header X-Powered-By;
+add_header "Referrer-Policy" "strict-origin";
+add_header Feature-Policy "geolocation 'none';midi 'none';sync-xhr 'none';microphone 'none';camera 'none';magnetometer 'none';gyroscope 'none';speaker 'self';fullscreen 'self';";        
+add_header "Strict-Transport-Security" "max-age=31536000";
+add_header "X-XSS-Protection" "1; mode=block";
+add_header "X-Content-Type-Options" "nosniff" always;
+add_header "X-Frame-Options" "DENY" always;
+add_header "X-Permitted-Cross-Domain-Policies" "master-only";
+add_header Content-Security-Policy "" always;
+add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;

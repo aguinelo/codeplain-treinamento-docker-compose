@@ -1,0 +1,64 @@
+version: '3.9'
+
+services:
+  
+  mysql:
+    image: mysql:8.0.29
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: 123456
+  
+  python-app:
+    build: python-app/.
+    ports:
+      - 8001
+    environment:
+      - SERVICE_PORT=8001
+    links:
+      - mysql
+
+  lbpython-app:
+    image: dockercloud/haproxy
+    restart: always
+    links:
+        - python-app
+    ports:
+        - '8000:80'
+    volumes:
+        - /var/run/docker.sock:/var/run/docker.sock
+    
+  front-app:
+    build: front/.
+    ports:
+      - "3001"
+    environment:
+      - SERVICE_PORT=3001
+
+  lbfront-app:
+    image: dockercloud/haproxy
+    restart: always
+    links:
+        - front-app
+    ports:
+        - '3000:80'
+    volumes:
+        - /var/run/docker.sock:/var/run/docker.sock
+
+  nginx:
+    build: ./nginx
+    restart: always        
+    links:
+        - lbfront-app
+    depends_on: 
+        - python-app
+        - lbfront-app
+        - mysql
+    # volumes:
+    #     - /root/docker/apps/certs/conf:/etc/nginx/ssl
+    #     - /root/docker/apps/certs/data:/var/www/certbot
+    ports:
+        - '80:80'
+        # - '443:443'

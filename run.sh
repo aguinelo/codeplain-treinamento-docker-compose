@@ -1,0 +1,1 @@
+docker-compose up --scale python-app=5 --scale front-app=3 --build -d
